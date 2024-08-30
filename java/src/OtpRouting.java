@@ -105,8 +105,8 @@ public class OtpRouting {
                                 double o_lat, double o_lon, double d_lat, double d_lon,
                                 String traverseModeSetStr
                                 ){
-//        LocalDateTime ldt = LocalDateTime.parse("2024-08-01T13:00");
-       LocalDateTime ldt = LocalDateTime.of(year,month,dayOfMonth,hour,minute);
+       LocalDateTime ldt = LocalDateTime.parse("2024-08-01T13:00");
+//       LocalDateTime ldt = LocalDateTime.of(year,month,dayOfMonth,hour,minute);
        RoutingRequest routingRequest = new RoutingRequest();
        routingRequest.dateTime = Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000;
        routingRequest.from = new GenericLocation(o_lat, o_lon);
@@ -125,7 +125,8 @@ public class OtpRouting {
            return routingResult;
        }
        /* TraverseModeをセットしてルート検索をリクエスト */
-       routingRequest.setModes(new TraverseModeSet(traverseModeSetStr));
+//       routingRequest.setModes(new TraverseModeSet(traverseModeSetStr));
+       routingRequest.setModes(TraverseModeSet.allModes());
        Router router = new Router("OTP_GTFS", graph);
        List<GraphPath> paths = new GraphPathFinder(router).getPaths(routingRequest);
        TripPlan tripPlan;
@@ -185,9 +186,12 @@ public class OtpRouting {
        public String toString(){
            String outStr = "";
            for (Leg leg: legs){
-               outStr += "[mode]:"+leg.mode +"[start]:"+convertCalendarToLocalDateTime(leg.startTime) +"[end]:"+convertCalendarToLocalDateTime(leg.endTime)+ "[routeName]" + leg.routeShortName +"("+leg.routeLongName + ") [tripName]" + leg.tripShortName + "\n";
+               outStr += "[mode]:"+leg.mode +"[start]:"+convertCalendarToLocalDateTime(leg.startTime) +"[end]:"+convertCalendarToLocalDateTime(leg.endTime)+ "[routeName]" + leg.routeShortName +"[tripName]" + leg.tripShortName + "[o_sta]" + leg.from.name + "[d_sta]" + leg.to.name + "\n";
            }
            return outStr;
+       }
+       public String toStringSimple(){
+           return "[isGeneratedGraph] " + isGeneratedGraph +" [isGeneratedRoute] " + isGeneratedRoute + " [startTripTime] " + startTripTime + " [endTripTime] " + endTripTime + " [legs] " + legs;
        }
    }
 
